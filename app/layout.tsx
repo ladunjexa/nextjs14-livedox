@@ -7,6 +7,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { dark } from "@clerk/themes";
 import { ClerkProvider } from "@clerk/nextjs";
+import { LiveBlocksProvider } from "./provider";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -32,7 +33,7 @@ export default function RootLayout({
     >
       <html lang="en" suppressHydrationWarning>
         <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
-          {children}
+          <LiveBlocksProvider>{children}</LiveBlocksProvider>
         </body>
       </html>
     </ClerkProvider>
