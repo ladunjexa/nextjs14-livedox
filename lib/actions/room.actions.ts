@@ -76,3 +76,5 @@ export async function getDocuments(email: string) {
     console.log(`Error getting document: ${error}`);
   }
 }
+
+export async function delteDocument(roomId: string) {}
