@@ -80,4 +80,5 @@ declare type AddDocumentBtnProps = {
 
 declare type DeleteModalProps = { roomId: string };
 
-// declare type ThreadWrapperProps = { thread: ThreadData<BaseMetadata> };
+// eslint-disable-next-line no-undef
+declare type ThreadWrapperProps = { thread: ThreadData<BaseMetadata> };
