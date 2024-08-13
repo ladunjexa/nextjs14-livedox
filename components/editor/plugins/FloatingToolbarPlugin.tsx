@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import {
   autoUpdate,
   flip,
@@ -161,7 +162,7 @@ function getDOMTextNode(element: Node | null): Text | null {
   return null;
 }
 
-function getDOMIndexWithinParent(node: ChildNode): [ParentNode, number] {
+function getDOMIndexWithinParent(node: React.ChildNode): [ParentNode, number] {
   const parent = node.parentNode;
 
   if (parent === null) {
