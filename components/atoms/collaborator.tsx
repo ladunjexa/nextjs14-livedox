@@ -6,13 +6,27 @@ import Image from "next/image";
 import { CollaboratorProps, UserType } from "@/types";
 import { Button } from "../ui/button";
 import UserTypeSelector from "./user-type-selector";
+import { removeCollaborator, updateDocumentAccess } from "@/lib/actions/room.actions";
 
 const Collaborator = ({ roomId, creatorId, email, collaborator, user }: CollaboratorProps) => {
   const [userType, setUserType] = useState<UserType>("viewer");
   const [loading, setLoading] = useState(false);
 
-  const shareDocumentHandler = async (type: string) => {};
-  const removeCollaboratorHandler = async (email: string) => {};
+  const shareDocumentHandler = async (type: string) => {
+    setLoading(true);
+
+    await updateDocumentAccess({ roomId, email, userType: type as UserType, updatedBy: user });
+
+    setLoading(false);
+  };
+
+  const removeCollaboratorHandler = async (email: string) => {
+    setLoading(true);
+
+    await removeCollaborator({ roomId, email });
+
+    setLoading(false);
+  };
 
   return (
     <li className="flex items-center justify-between gap-2 py-3">

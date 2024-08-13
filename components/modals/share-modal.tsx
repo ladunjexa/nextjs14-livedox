@@ -18,6 +18,7 @@ import { Label } from "../ui/label";
 import Image from "next/image";
 import UserTypeSelector from "../atoms/user-type-selector";
 import Collaborator from "../atoms/collaborator";
+import { updateDocumentAccess } from "@/lib/actions/room.actions";
 
 export const ShareModal = ({
   roomId,
@@ -33,7 +34,18 @@ export const ShareModal = ({
   const [email, setEmail] = useState("");
   const [userType, setUserType] = useState<UserType>("viewer");
 
-  const shareDocumentHandler = async () => {};
+  const shareDocumentHandler = async () => {
+    setLoading(true);
+
+    await updateDocumentAccess({
+      roomId,
+      email,
+      userType: userType as UserType,
+      updatedBy: user.info,
+    });
+
+    setLoading(false);
+  };
 
   return (
     <Dialog open={showModal} onOpenChange={setShowModal}>
@@ -54,7 +66,7 @@ export const ShareModal = ({
       </DialogTrigger>
       <DialogContent className="shad-dialog">
         <DialogHeader>
-          <DialogTitle>Manage who can view this project</DialogTitle>
+          <DialogTitle>Manage who can view this document</DialogTitle>
           <DialogDescription>Select which users can view and edit this document</DialogDescription>
         </DialogHeader>
 

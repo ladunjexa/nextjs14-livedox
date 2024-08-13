@@ -1,11 +1,11 @@
 "use server";
 
-import { CreateDocumentParams } from "@/types";
+import { AccessType, CreateDocumentParams, ShareDocumentParams } from "@/types";
 import { RoomAccesses } from "@liveblocks/node";
 import { nanoid } from "nanoid";
 import { liveblocks } from "../liveblocks";
 import { revalidatePath } from "next/cache";
-import { parseStringify } from "../utils";
+import { getAccessType, parseStringify } from "../utils";
 
 export async function createDocument({ userId, email }: CreateDocumentParams) {
   const roomId = nanoid();
@@ -24,7 +24,7 @@ export async function createDocument({ userId, email }: CreateDocumentParams) {
     const room = await liveblocks.createRoom(roomId, {
       metadata,
       usersAccesses,
-      defaultAccesses: ["room:write"],
+      defaultAccesses: [],
     });
 
     revalidatePath("/");
@@ -59,7 +59,7 @@ export async function updateDocument(roomId: string, title: string) {
       },
     });
 
-    revalidatePath(`/documents/${roomId}`);
+    revalidatePath(`/document/${roomId}`);
 
     return parseStringify(updatedRoom);
   } catch (error) {
@@ -77,4 +77,50 @@ export async function getDocuments(email: string) {
   }
 }
 
-export async function delteDocument(roomId: string) {}
+export async function deleteDocument(roomId: string) {}
+
+export async function updateDocumentAccess({
+  roomId,
+  email,
+  userType,
+  updatedBy,
+}: ShareDocumentParams) {
+  try {
+    const userAccesses: RoomAccesses = {
+      [email]: getAccessType(userType) as AccessType,
+    };
+
+    const room = await liveblocks.updateRoom(roomId, {
+      userAccesses,
+    });
+
+    if (room) {
+      // TODO: Send a notification to the user
+    }
+
+    revalidatePath(`/document/${roomId}`);
+  } catch (error) {
+    console.log(`Error updating document access: ${error}`);
+  }
+}
+
+export async function removeCollaborator({ roomId, email }: { roomId: string; email: string }) {
+  try {
+    const room = await liveblocks.getRoom(roomId);
+
+    if (room.metadata.email === email) {
+      throw new Error("You can't remove the creator of the document");
+    }
+
+    const updatedRoom = await liveblocks.updateRoom(roomId, {
+      usersAccesses: {
+        [email]: null,
+      },
+    });
+
+    revalidatePath(`/document/${roomId}`);
+    return parseStringify(updatedRoom);
+  } catch (error) {
+    console.log(`Error removing collaborator: ${error}`);
+  }
+}
