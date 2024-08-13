@@ -8,6 +8,7 @@ import Link from "next/link";
 
 import { redirect } from "next/navigation";
 import { dateConverter } from "@/lib/utils";
+import { DeleteModal } from "@/components/modals/delete-modal";
 
 export default async function Home() {
   const clerkUser = await currentUser();
@@ -50,6 +51,7 @@ export default async function Home() {
                     </p>
                   </div>
                 </Link>
+                <DeleteModal roomId={id} />
               </li>
             ))}
           </ul>

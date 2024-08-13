@@ -6,6 +6,7 @@ import { nanoid } from "nanoid";
 import { liveblocks } from "../liveblocks";
 import { revalidatePath } from "next/cache";
 import { getAccessType, parseStringify } from "../utils";
+import { redirect } from "next/navigation";
 
 export async function createDocument({ userId, email }: CreateDocumentParams) {
   const roomId = nanoid();
@@ -77,7 +78,16 @@ export async function getDocuments(email: string) {
   }
 }
 
-export async function deleteDocument(roomId: string) {}
+export async function deleteDocument(roomId: string) {
+  try {
+    await liveblocks.deleteRoom(roomId);
+
+    revalidatePath("/");
+    redirect("/");
+  } catch (error) {
+    console.log(`Error deleting document: ${error}`);
+  }
+}
 
 export async function updateDocumentAccess({
   roomId,
@@ -86,12 +96,12 @@ export async function updateDocumentAccess({
   updatedBy,
 }: ShareDocumentParams) {
   try {
-    const userAccesses: RoomAccesses = {
+    const usersAccesses: RoomAccesses = {
       [email]: getAccessType(userType) as AccessType,
     };
 
     const room = await liveblocks.updateRoom(roomId, {
-      userAccesses,
+      usersAccesses,
     });
 
     if (room) {
